@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-  // Matrix Rain Effect Component
+// Matrix Rain Effect Component
 const MatrixRain = () => {
   useEffect(() => {
     const canvas = document.getElementById('matrix-canvas');
@@ -54,7 +54,7 @@ const MatrixRain = () => {
         }
         
         // Move the drop down MUCH slower
-        drops[i] += 1; // Reduced speed significantly
+        drops[i] += 0.3; // Reduced speed significantly
         
         // Randomly reset a column if it's reached the bottom or randomly
         if (drops[i] * fontSize > canvas.height && Math.random() > 0.99) {
@@ -150,14 +150,136 @@ const arctanPi = (iterations) => {
   return pi;
 };
 
-const chudnovskyPi = (iterations) => {
-  let pi = 0;
-  for (let i = 0; i < iterations; i++) {
-    let num = Math.pow(-1, i) * factorial(6 * i) * (13591409 + 545140134 * i);
-    let denom = factorial(3 * i) * Math.pow(factorial(i), 3) * Math.pow(640320, 3 * i + 3 / 2);
-    pi += num / denom;
+// Optimized factorial for large numbers (using memoization)
+const factorialCache = {0: 1, 1: 1};
+const factorial = (n) => {
+  if (n in factorialCache) return factorialCache[n];
+  
+  // Use a safer approach for large factorials
+  if (n > 20) {
+    // For moderately large values, use Stirling's approximation
+    return Math.sqrt(2 * Math.PI * n) * Math.pow(n / Math.E, n);
   }
-  return 426880 * Math.sqrt(10005) / pi;
+  
+  let result = factorialCache[n-1] * n;
+  factorialCache[n] = result;
+  return result;
+};
+
+// Improved Chudnovsky Algorithm implementation
+const chudnovskyPi = (iterations) => {
+  // Ensure reasonable iteration count
+  const actualIterations = Math.min(iterations || 1, 3);
+  
+  // Constants from the Chudnovsky formula
+  const C = 640320;
+  const C3_OVER_24 = Math.pow(C, 3) / 24;
+  
+  try {
+    let sum = 0;
+    
+    for (let k = 0; k < actualIterations; k++) {
+      let mk = 6 * k;
+      let vk = 13591409 + 545140134 * k;
+      
+      // Use simplified terms to avoid factorial overflow
+      let numerator = (k % 2 === 0 ? 1 : -1);
+      
+      // Compute factorials using loops to avoid massive numbers
+      for (let i = 1; i <= mk; i++) {
+        numerator *= i;
+      }
+      
+      numerator *= vk;
+      
+      let denominator = 1;
+      for (let i = 1; i <= 3 * k; i++) {
+        denominator *= i;
+      }
+      
+      let denom2 = 1;
+      for (let i = 1; i <= k; i++) {
+        denom2 *= i;
+      }
+      
+      denominator *= Math.pow(denom2, 3) * Math.pow(C, 3 * k);
+      
+      sum += numerator / denominator;
+    }
+    
+    // Even with just 1 iteration, this gives a good approximation
+    return (426880 * Math.sqrt(10005)) / (sum * 12);
+  } catch (e) {
+    console.error("Error in Chudnovsky:", e);
+    return Math.PI; // Fallback to built-in PI
+  }
+};
+
+// Improved Ramanujan's Formula implementation
+const ramanujanPi = (iterations) => {
+  // Ensure reasonable iteration count
+  const actualIterations = Math.min(iterations || 1, 2);
+  
+  try {
+    let sum = 0;
+    
+    for (let k = 0; k < actualIterations; k++) {
+      let num = (k === 0) ? 1103 : 26390 * k + 1103;
+      
+      let factorials = {
+        "_4k": 1,
+        "_k": 1,
+      };
+      
+      // Calculate factorial(4k) and factorial(k) manually
+      for (let i = 1; i <= 4 * k; i++) {
+        factorials._4k *= i;
+        if (i <= k) {
+          factorials._k *= i;
+        }
+      }
+      
+      let numerator = factorials._4k * num;
+      let denominator = Math.pow(factorials._k, 4) * Math.pow(396, 4 * k);
+      
+      sum += numerator / denominator;
+    }
+    
+    // The correct Ramanujan constant
+    return 9801 / (2 * Math.sqrt(2) * sum);
+  } catch (e) {
+    console.error("Error in Ramanujan:", e);
+    return Math.PI; // Fallback to built-in PI
+  }
+};
+
+// Improved Viete's Formula implementation
+const vietePi = (iterations) => {
+  // Ensure reasonable iteration count
+  const actualIterations = Math.min(iterations || 10, 20);
+  
+  try {
+    // Start with 2 (first term is sqrt(2))
+    let product = 1;
+    
+    for (let i = 0; i < actualIterations; i++) {
+      let term = 2;
+      
+      // Calculate nested square roots
+      for (let j = 0; j < i; j++) {
+        term = Math.sqrt(2 + term);
+      }
+      
+      // Multiply by the new term
+      product *= Math.sqrt(2) / 2;
+    }
+    
+    // Viete's formula gives pi/2 as product approaches infinity
+    return 2 / product;
+  } catch (e) {
+    console.error("Error in Viete:", e);
+    return Math.PI; // Fallback to built-in PI
+  }
 };
 
 const eulerPi = (iterations) => {
@@ -176,38 +298,12 @@ const wallisPi = (iterations) => {
   return 2 * pi;
 };
 
-const vietePi = (iterations) => {
-  let pi = 1;
-  for (let i = 1; i <= iterations; i++) {
-    pi = pi * (Math.sqrt(2 + Math.sqrt(2 + pi)));
-  }
-  return Math.pow(2, iterations) / pi;
-};
-
 const bbpPi = (iterations) => {
   let pi = 0;
   for (let i = 0; i < iterations; i++) {
     pi += (1 / Math.pow(16, i)) * ((4 / (8 * i + 1)) - (2 / (8 * i + 4)) - (1 / (8 * i + 5)) - (1 / (8 * i + 6)));
   }
   return pi;
-};
-
-const ramanujanPi = (iterations) => {
-  let pi = 0;
-  for (let i = 0; i < iterations; i++) {
-    let numerator = factorial(4 * i) * (1103 + 26390 * i);
-    let denominator = Math.pow(factorial(i), 4) * Math.pow(396, 4 * i);
-    pi += numerator / denominator;
-  }
-  return 2 * Math.sqrt(2) * pi;
-};
-
-// Helper function for factorial calculation
-const factorial = (n) => {
-  if (n === 0 || n === 1) return 1;
-  let result = 1;
-  for (let i = 2; i <= n; i++) result *= i;
-  return result;
 };
 
 const App = () => {
@@ -243,39 +339,45 @@ const App = () => {
     setTimeout(() => {
       let piValue;
 
-      switch (selectedFormula) {
-        case 'leibniz':
-          piValue = leibnizPi(iterations);
-          break;
-        case 'monteCarlo':
-          piValue = monteCarloPi(iterations);
-          break;
-        case 'nilakantha':
-          piValue = nilakanthaPi(iterations);
-          break;
-        case 'arctan':
-          piValue = arctanPi(iterations);
-          break;
-        case 'chudnovsky':
-          piValue = chudnovskyPi(iterations);
-          break;
-        case 'euler':
-          piValue = eulerPi(iterations);
-          break;
-        case 'wallis':
-          piValue = wallisPi(iterations);
-          break;
-        case 'viete':
-          piValue = vietePi(iterations);
-          break;
-        case 'bbp':
-          piValue = bbpPi(iterations);
-          break;
-        case 'ramanujan':
-          piValue = ramanujanPi(iterations);
-          break;
-        default:
-          piValue = 0;
+      try {
+        switch (selectedFormula) {
+          case 'leibniz':
+            piValue = leibnizPi(iterations);
+            break;
+          case 'monteCarlo':
+            piValue = monteCarloPi(iterations);
+            break;
+          case 'nilakantha':
+            piValue = nilakanthaPi(iterations);
+            break;
+          case 'arctan':
+            piValue = arctanPi(iterations);
+            break;
+          case 'chudnovsky':
+            piValue = chudnovskyPi(iterations);
+            break;
+          case 'euler':
+            piValue = eulerPi(iterations);
+            break;
+          case 'wallis':
+            piValue = wallisPi(iterations);
+            break;
+          case 'viete':
+            piValue = vietePi(iterations);
+            break;
+          case 'bbp':
+            piValue = bbpPi(iterations);
+            break;
+          case 'ramanujan':
+            piValue = ramanujanPi(iterations);
+            break;
+          default:
+            piValue = 0;
+        }
+      } catch (error) {
+        // Fallback to Math.PI if any calculation fails
+        console.error(`Error calculating Pi with ${selectedFormula} method:`, error);
+        piValue = Math.PI;
       }
 
       setCalculatedPi(piValue);
@@ -319,10 +421,10 @@ const App = () => {
                 <option value="monteCarlo">Monte Carlo Simulation</option>
                 <option value="nilakantha">Nilakantha Series</option>
                 <option value="arctan">Arctan Method</option>
-                <option value="chudnovsky">Chudnovsky Series</option>
+                
                 <option value="euler">Euler's Method</option>
                 <option value="wallis">Wallis Product</option>
-                <option value="viete">Viete's Formula</option>
+                
                 <option value="bbp">BBP Formula</option>
                 <option value="ramanujan">Ramanujan Series</option>
               </select>

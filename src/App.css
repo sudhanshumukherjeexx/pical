@@ -429,3 +429,37 @@ label {
     max-height: 50vh;
   }
 }
+
+/* Fix for card overflow issues */
+.app-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Changed from center to flex-start */
+  z-index: 1;
+  padding: 20px 0;
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.app-container {
+  max-width: 800px;
+  width: 100%;
+  padding: 20px;
+  margin: 20px auto;
+  position: relative;
+  height: auto;
+}
+
+body {
+  overflow-y: auto !important; /* Ensure body can scroll */
+}
+
+/* Ensure the result card stays within view */
+.result-card {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  max-width: 100%;
+  overflow-x: auto; /* Allow horizontal scrolling for long decimals */
+}
