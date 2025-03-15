@@ -1,6 +1,8 @@
 # Pi Calculator
 A modern React application that calculates π (pi) using various mathematical methods, all wrapped in an engaging Matrix-inspired interface.
 
+![PiCal](./pi-speed.gif)
+
 ## 🔢 Features
 
 - **Multiple Calculation Methods**: Choose from 10 different mathematical approaches to calculate π:
@@ -100,3 +102,10 @@ Contributions are welcome! Feel free to submit a pull request or open an issue i
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 Made with ❤️ and mathematics
+
+
+
+
+
+
+
