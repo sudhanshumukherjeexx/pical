@@ -1,7 +1,7 @@
 # Pi Calculator
 A modern React application that calculates π (pi) using various mathematical methods, all wrapped in an engaging Matrix-inspired interface.
 
-![PiCal](./pi-speed.gif)
+![PiCal](./pi_speed.gif)
 
 ## 🔢 Features
 
