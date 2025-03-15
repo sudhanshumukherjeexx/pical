@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/pical/static/css/main.27b18d64.css",
+    "main.js": "/pical/static/js/main.a928f6b1.js",
+    "static/js/453.b2c95350.chunk.js": "/pical/static/js/453.b2c95350.chunk.js",
+    "index.html": "/pical/index.html",
+    "main.27b18d64.css.map": "/pical/static/css/main.27b18d64.css.map",
+    "main.a928f6b1.js.map": "/pical/static/js/main.a928f6b1.js.map",
+    "453.b2c95350.chunk.js.map": "/pical/static/js/453.b2c95350.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.27b18d64.css",
+    "static/js/main.a928f6b1.js"
+  ]
+}
